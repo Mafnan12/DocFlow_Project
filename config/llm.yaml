@@ -1,0 +1,59 @@
+# LLM Roles and Multi-Provider Fallback Routing
+# Zero-cost tiers: Groq, Gemini, GitHub Models, OpenRouter free
+
+roles:
+  fast:
+    # Classification and quick format tasks
+    models:
+      - id: groq/llama-3.1-8b-instant
+        rpm: 30
+      - id: gemini/gemini-1.5-flash-8b
+        rpm: 15
+      - id: github/gpt-4o-mini
+        rpm: 15
+    temperature: 0.0
+    timeout_seconds: 15
+    max_retries: 2
+
+  smart:
+    # Text-based extraction (Approach A) and self-correction reasoning
+    models:
+      - id: groq/llama-3.3-70b-versatile
+        rpm: 30
+      - id: gemini/gemini-1.5-flash
+        rpm: 15
+      - id: github/gpt-4o
+        rpm: 10
+    temperature: 0.0
+    timeout_seconds: 30
+    max_retries: 2
+
+  vision:
+    # Multimodal image extraction (Approach B) and crop inspection
+    # MUST support image input
+    models:
+      - id: gemini/gemini-1.5-flash
+        rpm: 15
+      - id: groq/llama-3.2-11b-vision-preview
+        rpm: 30
+      - id: github/gpt-4o-mini
+        rpm: 15
+    temperature: 0.0
+    timeout_seconds: 30
+    max_retries: 2
+
+  judge:
+    # Post-hoc evaluation / error analysis (not on critical path)
+    models:
+      - id: gemini/gemini-1.5-pro
+        rpm: 5
+      - id: groq/llama-3.3-70b-versatile
+        rpm: 30
+    temperature: 0.0
+    timeout_seconds: 45
+    max_retries: 1
+
+cache:
+  enabled: true
+  ttl_seconds: 86400
+  storage_dir: .cache/llm

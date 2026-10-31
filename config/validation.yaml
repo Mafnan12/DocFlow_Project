@@ -1,0 +1,13 @@
+tolerance:
+  absolute: "0.05"                 # in document currency units
+  relative: 0.005                  # 0.5%; the larger of the two is used
+  zero_decimal_currencies: [IDR, JPY, KRW]   # tolerance scaled for these (e.g., 1 unit or relative)
+
+date:
+  min_year: 2000
+  max_year: 2026                   # set to current year
+required_fields:
+  receipt: [vendor_name, date, total]
+  invoice: [vendor_name, date, total, invoice_number]
+critical_fields: [vendor_name, date, currency, total]   # drive auto-approval
+known_currencies: [MYR, IDR, USD, EUR, GBP, PKR, SGD, AED]

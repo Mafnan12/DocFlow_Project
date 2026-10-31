@@ -1,0 +1,33 @@
+files:
+  allowed_types: [image/jpeg, image/png, application/pdf]
+  max_file_mb: 10
+  max_pdf_pages: 3
+  max_image_pixels: 40000000       # decompression-bomb guard
+
+preprocess:
+  max_long_side_px: 2000
+  auto_rotate_exif: true
+  deskew: true
+  contrast_enhance: false          # experiment flag
+
+pdf:
+  use_text_layer_if_present: true
+  min_text_layer_chars: 50         # below this, treat PDF as scanned
+  render_dpi: 200
+
+ocr:
+  engine: paddle                   # paddle | tesseract | doctr
+  min_word_confidence: 0.0
+
+approaches:
+  text: true                       # approach A
+  vision: true                     # approach B
+  run_in_parallel: true
+
+agent:
+  enabled: true                    # experiment flag
+  max_correction_rounds: 2
+  zoom_factor: 2.0
+
+classification:
+  reject_other: true

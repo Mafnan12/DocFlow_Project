@@ -1,0 +1,7 @@
+users:
+  - {user_id: sana, display_name: "Sana (Bookkeeper)", role: bookkeeper}
+  - {user_id: admin, display_name: "Admin", role: admin}
+clients:
+  - {client_id: kopi-corner, name: "Kopi Corner Café"}
+  - {client_id: brightline, name: "Brightline Studio"}
+  - {client_id: metro-hardware, name: "Metro Hardware"}

@@ -1,0 +1,11 @@
+signals:
+  agreement_weight: 0.45           # A and B agree on the field (after normalization)
+  validation_weight: 0.35          # field involved in passing/failing rules
+  ocr_support_weight: 0.10         # value found in OCR text with good word confidence
+  no_correction_weight: 0.10       # field didn't need self-correction
+field_threshold: 0.70              # below -> field flagged
+auto_approve_requires:
+  all_critical_fields_above_threshold: true
+  all_validation_rules_pass: true
+  doc_type_confidence_min: 0.8
+tuned_on: "dev split, initial default prior to sweep"
