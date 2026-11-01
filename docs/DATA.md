@@ -106,3 +106,52 @@ All datasets are converted into a standardized JSON schema by `scripts/convert_g
 - **Dev Split:** Used strictly for prompt engineering, threshold calibration sweeps, and error analysis.
 - **Test Split:** Sealed and held out until final benchmark generation. Never inspect, debug, or tune thresholds on the test split.
 - **Fixed Random Seed:** `SEED = 42` is enforced across all data splitters and synthetic generators to guarantee exact reproducibility across all machines.
+
+---
+
+## 5. Download Sources & Versions
+
+### 5.1 CORD v2
+
+| Field | Value |
+|---|---|
+| **HuggingFace ID** | `naver-clova-ix/cord-v2` |
+| **Download method** | `datasets` library (`load_dataset("naver-clova-ix/cord-v2")`) |
+| **Splits provided** | `train` (800), `validation` (100), `test` (100) |
+| **Download script** | `scripts/download_datasets.py --cord` |
+| **Data directory** | `data/cord/{train,validation,test}/` (git-ignored) |
+| **License** | CC BY 4.0 |
+| **Citation** | Park, S., et al. (2019). CORD: A Consolidated Receipt Dataset for Post-OCR Parsing. NeurIPS 2019 Workshop. |
+
+### 5.2 SROIE
+
+| Field | Value |
+|---|---|
+| **Origin** | ICDAR 2019 Robust Reading Challenge on Scanned Receipts OCR and IE |
+| **HF mirror** | `jinhybr/OCR-SROIE-2019` or Kaggle `urbikn/sroie-datasetv2` |
+| **Download method** | Manual — see `python scripts/download_datasets.py --sroie` for instructions |
+| **Splits provided** | `train` (~626 receipts), `test` (~347 receipts) |
+| **Data directory** | `data/sroie/{train,test}/` (git-ignored) |
+| **License** | ICDAR 2019 competition terms — research/academic use |
+| **Citation** | Huang, Z., et al. (2019). ICDAR 2019 Competition on Scanned Receipt OCR and Information Extraction. ICDAR 2019. |
+| **Note on label noise** | ~3–5% of labels have minor transcription errors. Flagged records are excluded from the dev and test manifests if found. |
+
+### 5.3 Synthetic Invoices
+
+| Field | Value |
+|---|---|
+| **Generator** | `scripts/generate_invoices.py` |
+| **Ground truth source** | Directly from `Faker` data models — 100% exact |
+| **Number of templates** | 4 (classic_table, modern_minimal, two_column, thermal_compact) |
+| **Currencies** | USD, EUR, GBP, PKR, AED |
+| **Total generated** | 500 (200 dev, 400 test) — runs locally with no internet |
+| **Hard cases** | ~30% include: multi-line items, page overflow, European numbers, previous balance lines |
+
+### 5.4 Currency Inference Note
+
+For CORD and SROIE, the document currency is **inferred** from dataset provenance, not extracted from labels:
+
+- **CORD** → `IDR` (Indonesian Rupiah) — all receipts are from Indonesia
+- **SROIE** → `MYR` (Malaysian Ringgit) — all receipts are from Malaysia
+
+Currency is only scored against ground truth for **synthetic invoices**, where it is truly labeled.
