@@ -31,6 +31,7 @@ dependencies = [
     "faker>=25.8.0",
     "jinja2>=3.1.4",
     "datasets>=2.20.0",
+    "reportlab>=4.2.0",
 ]
 
 [project.optional-dependencies]

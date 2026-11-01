@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice {{ invoice_number }}</title>
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; font-size: 11px; color: #2c2c2c; margin: 0; padding: 32px; }
+  .outer { border: 2px solid #2c2c2c; padding: 0; }
+  .header-band { background: #2c2c2c; color: #fff; display: flex; padding: 20px 24px; }
+  .header-left { flex: 1; }
+  .header-left h1 { font-size: 20px; margin: 0 0 4px 0; font-weight: normal; }
+  .header-left .addr { font-size: 10px; color: #ccc; line-height: 1.5; }
+  .header-right { text-align: right; }
+  .header-right .inv-title { font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #f0b429; }
+  .header-right .inv-num { font-size: 11px; color: #ccc; margin-top: 4px; }
+  .two-col { display: flex; padding: 16px 24px; border-bottom: 1px solid #ccc; gap: 24px; }
+  .col { flex: 1; }
+  .col-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #888; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-bottom: 8px; }
+  .col-value { line-height: 1.6; }
+  table { width: 100%; border-collapse: collapse; }
+  table.items thead th { background: #f0b429; padding: 8px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-family: Arial, sans-serif; }
+  table.items tbody td { padding: 7px 12px; border-bottom: 1px solid #e8e8e8; }
+  table.items tbody tr:nth-child(even) td { background: #fafafa; }
+  .num { text-align: right; }
+  .total-band { background: #2c2c2c; color: #fff; }
+  .total-band td { padding: 10px 12px; font-size: 13px; font-weight: bold; }
+  .subtotals td { padding: 5px 12px; }
+  .subtotals td.label { color: #555; text-align: right; }
+  .subtotals td.amount { text-align: right; width: 100px; }
+  .previous-balance { font-size: 10px; color: #999; font-style: italic; }
+  .footer { padding: 12px 24px; font-size: 10px; color: #777; }
+</style>
+</head>
+<body>
+<div class="outer">
+
+  <div class="header-band">
+    <div class="header-left">
+      <h1>{{ vendor_name }}</h1>
+      <div class="addr">{{ vendor_address }}<br>{{ vendor_email }}</div>
+    </div>
+    <div class="header-right">
+      <div class="inv-title">INVOICE</div>
+      <div class="inv-num"># {{ invoice_number }}</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="col">
+      <div class="col-label">Bill To</div>
+      <div class="col-value"><strong>{{ client_name }}</strong><br>{{ client_address }}</div>
+    </div>
+    <div class="col">
+      <div class="col-label">Invoice Details</div>
+      <div class="col-value">
+        <table style="border:none">
+          <tr><td style="padding:2px 8px 2px 0; color:#555">Date:</td><td>{{ date }}</td></tr>
+          <tr><td style="padding:2px 8px 2px 0; color:#555">Due Date:</td><td>{{ due_date }}</td></tr>
+          <tr><td style="padding:2px 8px 2px 0; color:#555">Currency:</td><td>{{ currency_code }}</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <table class="items">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="num" style="width:50px">Qty</th>
+        <th class="num" style="width:110px">Unit Price</th>
+        <th class="num" style="width:110px">Line Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in line_items %}
+      <tr>
+        <td>{{ item.description }}</td>
+        <td class="num">{{ item.quantity }}</td>
+        <td class="num">{{ item.unit_price_fmt }}</td>
+        <td class="num">{{ item.total_fmt }}</td>
+      </tr>
+      {% endfor %}
+      {% if previous_balance %}
+      <tr><td colspan="3" class="previous-balance">Previous outstanding balance (carried forward — not included in total due)</td>
+          <td class="num previous-balance">{{ previous_balance_fmt }}</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <table class="subtotals">
+    <tr><td class="label">Subtotal:</td><td class="amount">{{ subtotal_fmt }}</td></tr>
+    {% if discount %}<tr><td class="label">Discount:</td><td class="amount">-{{ discount_fmt }}</td></tr>{% endif %}
+    {% if tax %}<tr><td class="label">Tax ({{ tax_rate }}%):</td><td class="amount">{{ tax_fmt }}</td></tr>{% endif %}
+    {% if tax2 %}<tr><td class="label">{{ tax2_label }} ({{ tax2_rate }}%):</td><td class="amount">{{ tax2_fmt }}</td></tr>{% endif %}
+    {% if service_charge %}<tr><td class="label">Service:</td><td class="amount">{{ service_charge_fmt }}</td></tr>{% endif %}
+    <tr class="total-band">
+      <td class="label" style="color:#f0b429; text-align:right">TOTAL DUE</td>
+      <td class="amount" style="color:#f0b429">{{ currency_symbol }}{{ total_fmt }}</td>
+    </tr>
+    {% if total_in_words %}<tr><td colspan="2" style="font-size:10px; color:#777; padding:8px 12px;">Amount in words: {{ total_in_words }}</td></tr>{% endif %}
+  </table>
+
+  {% if notes %}
+  <div class="footer">{{ notes }}</div>
+  {% endif %}
+
+</div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice {{ invoice_number }}</title>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 11px; color: #222; margin: 40px; }
+  h1 { font-size: 24px; color: #1a3a5c; margin: 0; }
+  .header { display: flex; justify-content: space-between; margin-bottom: 24px; }
+  .vendor { flex: 1; }
+  .invoice-meta { text-align: right; }
+  .invoice-meta h1 { color: #1a3a5c; }
+  .invoice-meta table { margin-left: auto; }
+  .bill-to { margin-bottom: 20px; }
+  .bill-to strong { display: block; margin-bottom: 4px; color: #555; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+  table.items { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  table.items th { background: #1a3a5c; color: #fff; padding: 7px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
+  table.items td { padding: 6px 10px; border-bottom: 1px solid #ddd; }
+  table.items tr:nth-child(even) td { background: #f6f9fc; }
+  .totals { width: 280px; margin-left: auto; }
+  .totals td { padding: 4px 8px; }
+  .totals td:last-child { text-align: right; }
+  .totals .grand-total td { font-weight: bold; font-size: 13px; border-top: 2px solid #1a3a5c; }
+  .notes { margin-top: 24px; font-size: 10px; color: #777; border-top: 1px solid #ddd; padding-top: 8px; }
+  .previous-balance { color: #888; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="vendor">
+    <h1>{{ vendor_name }}</h1>
+    <div>{{ vendor_address }}</div>
+    <div>{{ vendor_email }}</div>
+  </div>
+  <div class="invoice-meta">
+    <div style="font-size:20px; font-weight:bold; color:#1a3a5c; margin-bottom:8px;">INVOICE</div>
+    <table>
+      <tr><td style="color:#555">Invoice #:</td><td><strong>{{ invoice_number }}</strong></td></tr>
+      <tr><td style="color:#555">Date:</td><td>{{ date }}</td></tr>
+      <tr><td style="color:#555">Due:</td><td>{{ due_date }}</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="bill-to">
+  <strong>Bill To</strong>
+  <div>{{ client_name }}</div>
+  <div>{{ client_address }}</div>
+</div>
+
+<table class="items">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th style="width:60px; text-align:center">Qty</th>
+      <th style="width:100px; text-align:right">Unit Price</th>
+      <th style="width:100px; text-align:right">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in line_items %}
+    <tr>
+      <td>{{ item.description }}</td>
+      <td style="text-align:center">{{ item.quantity }}</td>
+      <td style="text-align:right">{{ item.unit_price_fmt }}</td>
+      <td style="text-align:right">{{ item.total_fmt }}</td>
+    </tr>
+    {% endfor %}
+    {% if previous_balance %}
+    <tr class="previous-balance">
+      <td colspan="3">Previous balance (not included in total)</td>
+      <td style="text-align:right">{{ previous_balance_fmt }}</td>
+    </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<table class="totals">
+  <tr><td>Subtotal</td><td>{{ subtotal_fmt }}</td></tr>
+  {% if discount %}<tr><td>Discount</td><td>-{{ discount_fmt }}</td></tr>{% endif %}
+  {% if tax %}<tr><td>Tax ({{ tax_rate }}%)</td><td>{{ tax_fmt }}</td></tr>{% endif %}
+  {% if tax2 %}<tr><td>{{ tax2_label }} ({{ tax2_rate }}%)</td><td>{{ tax2_fmt }}</td></tr>{% endif %}
+  {% if service_charge %}<tr><td>Service Charge</td><td>{{ service_charge_fmt }}</td></tr>{% endif %}
+  <tr class="grand-total"><td>TOTAL</td><td>{{ currency_symbol }}{{ total_fmt }}</td></tr>
+  {% if total_in_words %}<tr><td colspan="2" style="font-size:10px; color:#777;">Amount in words: {{ total_in_words }}</td></tr>{% endif %}
+</table>
+
+{% if notes %}
+<div class="notes">{{ notes }}</div>
+{% endif %}
+
+</body>
+</html>

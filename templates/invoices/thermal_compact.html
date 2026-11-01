@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Receipt</title>
+<style>
+  body { font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #111; background: #fff; width: 280px; margin: 0 auto; padding: 12px 0; }
+  .center { text-align: center; }
+  .sep { border: none; border-top: 1px dashed #888; margin: 8px 0; }
+  .store { font-size: 14px; font-weight: bold; margin-bottom: 2px; }
+  .addr { font-size: 10px; color: #555; margin-bottom: 2px; }
+  .meta { font-size: 10px; color: #444; margin-bottom: 4px; }
+  table { width: 100%; border-collapse: collapse; }
+  table td { padding: 1px 2px; vertical-align: top; }
+  .item-name { width: 60%; }
+  .item-qty { width: 10%; text-align: center; }
+  .item-price { width: 30%; text-align: right; }
+  .total-label { font-weight: bold; }
+  .total-value { font-weight: bold; text-align: right; font-size: 13px; }
+  .thank-you { font-size: 10px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="center">
+  <div class="store">{{ vendor_name }}</div>
+  <div class="addr">{{ vendor_address }}</div>
+  <div class="meta">Tel: {{ vendor_email }}</div>
+</div>
+
+<hr class="sep">
+
+<div class="meta">Date: {{ date }}</div>
+<div class="meta">Receipt#: {{ invoice_number }}</div>
+<div class="meta">Cashier: {{ client_name }}</div>
+
+<hr class="sep">
+
+<table>
+  {% for item in line_items %}
+  <tr>
+    <td class="item-name">{{ item.description }}</td>
+    <td class="item-qty">{{ item.quantity }}x</td>
+    <td class="item-price">{{ item.total_fmt }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<hr class="sep">
+
+<table>
+  <tr><td>Subtotal</td><td style="text-align:right">{{ subtotal_fmt }}</td></tr>
+  {% if discount %}<tr><td>Discount</td><td style="text-align:right">-{{ discount_fmt }}</td></tr>{% endif %}
+  {% if tax %}<tr><td>Tax {{ tax_rate }}%</td><td style="text-align:right">{{ tax_fmt }}</td></tr>{% endif %}
+  {% if service_charge %}<tr><td>Service</td><td style="text-align:right">{{ service_charge_fmt }}</td></tr>{% endif %}
+</table>
+
+<hr class="sep">
+
+<table>
+  <tr>
+    <td class="total-label">TOTAL ({{ currency_code }})</td>
+    <td class="total-value">{{ total_fmt }}</td>
+  </tr>
+  {% if total_in_words %}<tr><td colspan="2" style="font-size:9px;">{{ total_in_words }}</td></tr>{% endif %}
+</table>
+
+<hr class="sep">
+
+{% if notes %}
+<div class="meta">{{ notes }}</div>
+{% endif %}
+
+<div class="center thank-you">
+  *** THANK YOU ***<br>
+  Please retain this receipt
+</div>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice {{ invoice_number }}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333; background: #fff; padding: 48px; }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+  .logo-block h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.5px; color: #111; }
+  .logo-block .tagline { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 2px; }
+  .invoice-tag { font-size: 11px; color: #888; text-align: right; line-height: 1.8; }
+  .invoice-tag strong { display: block; font-size: 22px; color: #111; font-weight: 300; }
+  .divider { height: 1px; background: #eee; margin: 24px 0; }
+  .parties { display: flex; gap: 40px; margin-bottom: 32px; }
+  .party { flex: 1; }
+  .party-label { font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .party-name { font-weight: 500; color: #111; margin-bottom: 4px; }
+  .party-detail { color: #888; font-size: 11px; line-height: 1.5; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; padding: 8px 0; border-bottom: 1px solid #eee; text-align: left; }
+  thead th:last-child, thead th:nth-last-child(2), thead th:nth-last-child(3) { text-align: right; }
+  tbody td { padding: 10px 0; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
+  tbody td:last-child, tbody td:nth-last-child(2), tbody td:nth-last-child(3) { text-align: right; }
+  tbody tr:last-child td { border-bottom: none; }
+  .desc-secondary { font-size: 10px; color: #aaa; margin-top: 2px; }
+  .summary { display: flex; justify-content: flex-end; margin-top: 24px; }
+  .summary-table { width: 260px; }
+  .summary-table td { padding: 4px 0; color: #555; }
+  .summary-table td:last-child { text-align: right; }
+  .summary-table .total-row td { font-size: 14px; color: #111; font-weight: 500; border-top: 1px solid #eee; padding-top: 12px; }
+  .notes-block { margin-top: 40px; padding: 16px; background: #fafafa; border-left: 3px solid #eee; font-size: 10px; color: #888; }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo-block">
+    <h1>{{ vendor_name }}</h1>
+    <div class="tagline">Professional Services</div>
+  </div>
+  <div class="invoice-tag">
+    <strong>Invoice</strong>
+    #{{ invoice_number }}<br>
+    Issued {{ date }}<br>
+    Due {{ due_date }}
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="parties">
+  <div class="party">
+    <div class="party-label">From</div>
+    <div class="party-name">{{ vendor_name }}</div>
+    <div class="party-detail">{{ vendor_address }}<br>{{ vendor_email }}</div>
+  </div>
+  <div class="party">
+    <div class="party-label">Bill To</div>
+    <div class="party-name">{{ client_name }}</div>
+    <div class="party-detail">{{ client_address }}</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th style="width:50px; text-align:right">Qty</th>
+      <th style="width:110px; text-align:right">Rate ({{ currency_code }})</th>
+      <th style="width:110px; text-align:right">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in line_items %}
+    <tr>
+      <td>
+        <div>{{ item.description }}</div>
+        {% if item.note %}<div class="desc-secondary">{{ item.note }}</div>{% endif %}
+      </td>
+      <td style="text-align:right">{{ item.quantity }}</td>
+      <td style="text-align:right">{{ item.unit_price_fmt }}</td>
+      <td style="text-align:right">{{ item.total_fmt }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="summary">
+  <table class="summary-table">
+    <tr><td>Subtotal</td><td>{{ subtotal_fmt }}</td></tr>
+    {% if discount %}<tr><td>Discount ({{ discount_pct }}%)</td><td>-{{ discount_fmt }}</td></tr>{% endif %}
+    {% if tax %}<tr><td>Tax {{ tax_rate }}%</td><td>{{ tax_fmt }}</td></tr>{% endif %}
+    {% if tax2 %}<tr><td>{{ tax2_label }} {{ tax2_rate }}%</td><td>{{ tax2_fmt }}</td></tr>{% endif %}
+    <tr class="total-row"><td>Total due</td><td>{{ currency_code }} {{ total_fmt }}</td></tr>
+    {% if total_in_words %}<tr><td colspan="2" style="font-size:10px; color:#888; padding-top:8px;">{{ total_in_words }}</td></tr>{% endif %}
+  </table>
+</div>
+
+{% if notes %}
+<div class="notes-block">{{ notes }}</div>
+{% endif %}
+
+</body>
+</html>
